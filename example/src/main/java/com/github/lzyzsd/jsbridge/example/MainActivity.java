@@ -20,13 +20,9 @@ import com.google.gson.Gson;
 public class MainActivity extends Activity implements OnClickListener {
 
 	private final String TAG = "MainActivity";
-
 	BridgeWebView webView;
-
 	Button button;
-
 	int RESULT_CODE = 0;
-
 	ValueCallback<Uri> mUploadMessage;
 
     static class Location {
@@ -77,7 +73,7 @@ public class MainActivity extends Activity implements OnClickListener {
 			@Override
 			public void handler(String data, CallBackFunction function) {
 				Log.i(TAG, "handler = submitFromWeb, data from web = " + data);
-                function.onCallBack("submitFromWeb exe, response data 中文 from Java");
+                function.onCallBack("submitFromWeb exe, response data Hebrew from Java");
 			}
 
 		});
@@ -86,17 +82,16 @@ public class MainActivity extends Activity implements OnClickListener {
         Location location = new Location();
         location.address = "SDU";
         user.location = location;
-        user.name = "大头鬼";
+        user.name = "Big head name";
 
         webView.callHandler("functionInJs", new Gson().toJson(user), new CallBackFunction() {
             @Override
             public void onCallBack(String data) {
-
+				Log.e(TAG, "callHandler: onCallback: " + data);
             }
         });
 
         webView.send("hello");
-
 	}
 
 	public void pickFile() {
@@ -125,12 +120,9 @@ public class MainActivity extends Activity implements OnClickListener {
 				@Override
 				public void onCallBack(String data) {
 					// TODO Auto-generated method stub
-					Log.i(TAG, "reponse data from js " + data);
+					Log.i(TAG, "response data from js " + data);
 				}
-
 			});
 		}
-
 	}
-
 }

@@ -2,7 +2,7 @@
     <head>
         <meta content="text/html; charset=utf-8" http-equiv="content-type">
         <title>
-            js调用java
+            js call java
         </title>
     </head>
     
@@ -16,24 +16,22 @@
             </xmp>
         </p>
         <p>
-            <input type="text" id="text1" value="用户名(username)" />
+            <input type="text" id="text1" value="Username" />
         </p>
         <p>
-            <input type="text" id="text2" value="password" />
+            <input type="text" id="text2" value="Password" />
         </p>
         <p>
-            <input type="button" id="enter" value="发消息给Native" onclick="testClick();"
-            />
+            <input type="button" id="enter" value="Send Message To Native" onclick="testClick();"/>
         </p>
         <p>
-            <input type="button" id="enter1" value="调用Native方法" onclick="testClick1();"
-            />
+            <input type="button" id="enter1" value="Connect to Server" onclick="testClick1();"/>
         </p>
         <p>
-            <input type="button" id="enter2" value="显示html" onclick="testDiv();" />
+            <input type="button" id="enter2" value="show html" onclick="testDiv();" />
         </p>
         <p>
-            <input type="file" value="打开文件" />
+            <input type="file" value="Open file" />
         </p>
     </body>
     <script>
@@ -53,7 +51,6 @@
                     document.getElementById("show").innerHTML = "repsonseData from java, data = " + responseData
                 }
             );
-
         }
 
         function testClick1() {
@@ -63,7 +60,7 @@
             //call native method
             window.WebViewJavascriptBridge.callHandler(
                 'submitFromWeb'
-                , {'param': '中文测试'}
+                , {'param': 'testClick1 function'}
                 , function(responseData) {
                     document.getElementById("show").innerHTML = "send get responseData from java, data = " + responseData
                 }
@@ -92,7 +89,7 @@
             bridge.init(function(message, responseCallback) {
                 console.log('JS got a message', message);
                 var data = {
-                    'Javascript Responds': '测试中文!'
+                    'Javascript Responds': 'Javascript Response!'
                 };
                 console.log('JS responding with', data);
                 responseCallback(data);
