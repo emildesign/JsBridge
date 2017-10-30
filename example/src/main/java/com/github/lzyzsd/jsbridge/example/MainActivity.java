@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebView;
 import android.widget.Button;
 
 import com.github.lzyzsd.jsbridge.BridgeHandler;
@@ -19,11 +21,13 @@ import com.google.gson.Gson;
 
 public class MainActivity extends Activity implements OnClickListener {
 
-	private final String TAG = "MainActivity";
-	BridgeWebView webView;
-	Button button;
-	int RESULT_CODE = 0;
-	ValueCallback<Uri> mUploadMessage;
+    private final String TAG = "MainActivity";
+    private int RESULT_CODE = 0;
+
+	private WebView mWebView;
+	private BridgeWebView mBridgeWebView;
+	private Button mButton;
+	private ValueCallback<Uri> mUploadMessage;
 
     static class Location {
         String address;
@@ -40,15 +44,14 @@ public class MainActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-        webView = (BridgeWebView) findViewById(R.id.webView);
+        mWebView = (WebView) findViewById(R.id.webView);
+        mBridgeWebView = new BridgeWebView(mWebView);
+        mBridgeWebView.setDefaultHandler(new DefaultHandler());
 
-		button = (Button) findViewById(R.id.button);
+		mButton = (Button) findViewById(R.id.button);
+		mButton.setOnClickListener(this);
 
-		button.setOnClickListener(this);
-
-		webView.setDefaultHandler(new DefaultHandler());
-
-		webView.setWebChromeClient(new WebChromeClient() {
+		mWebView.setWebChromeClient(new WebChromeClient() {
 
 			@SuppressWarnings("unused")
 			public void openFileChooser(ValueCallback<Uri> uploadMsg, String AcceptType, String capture) {
@@ -66,9 +69,9 @@ public class MainActivity extends Activity implements OnClickListener {
 			}
 		});
 
-		webView.loadUrl("file:///android_asset/demo.html");
+		mWebView.loadUrl("file:///android_asset/demo.html");
 
-		webView.registerHandler("submitFromWeb", new BridgeHandler() {
+        mBridgeWebView.registerHandler("submitFromWeb", new BridgeHandler() {
 
 			@Override
 			public void handler(String data, CallBackFunction function) {
@@ -78,23 +81,29 @@ public class MainActivity extends Activity implements OnClickListener {
 
 		});
 
-        User user = new User();
-        Location location = new Location();
-        location.address = "SDU";
-        user.location = location;
-        user.name = "Big head name";
+        User user = getUser();
 
-        webView.callHandler("functionInJs", new Gson().toJson(user), new CallBackFunction() {
+        mBridgeWebView.callHandler("functionInJs", new Gson().toJson(user), new CallBackFunction() {
             @Override
             public void onCallBack(String data) {
 				Log.e(TAG, "callHandler: onCallback: " + data);
             }
         });
 
-        webView.send("hello");
+        mBridgeWebView.send("hello");
 	}
 
-	public void pickFile() {
+    @NonNull
+    private User getUser() {
+        User user = new User();
+        Location location = new Location();
+        location.address = "SDU";
+        user.location = location;
+        user.name = "Big head name";
+        return user;
+    }
+
+    public void pickFile() {
 		Intent chooserIntent = new Intent(Intent.ACTION_GET_CONTENT);
 		chooserIntent.setType("image/*");
 		startActivityForResult(chooserIntent, RESULT_CODE);
@@ -114,8 +123,8 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		if (button.equals(v)) {
-            webView.callHandler("functionInJs", "data from Java", new CallBackFunction() {
+		if (mButton.equals(v)) {
+            mBridgeWebView.callHandler("functionInJs", "data from Java", new CallBackFunction() {
 
 				@Override
 				public void onCallBack(String data) {

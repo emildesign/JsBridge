@@ -1,12 +1,10 @@
 package com.github.lzyzsd.jsbridge;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.text.TextUtils;
-import android.util.AttributeSet;
 import android.webkit.WebView;
 
 import java.util.ArrayList;
@@ -15,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressLint("SetJavaScriptEnabled")
-public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
+public class BridgeWebView implements WebViewJavascriptBridge {
 
 	private final String TAG = "BridgeWebView";
 
@@ -23,33 +21,23 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
 	Map<String, CallBackFunction> responseCallbacks = new HashMap<String, CallBackFunction>();
 	Map<String, BridgeHandler> messageHandlers = new HashMap<String, BridgeHandler>();
 	BridgeHandler defaultHandler = new DefaultHandler();
-
 	private List<Message> startupMessage = new ArrayList<Message>();
+	private WebView mWebView;
+
 
 	public List<Message> getStartupMessage() {
 		return startupMessage;
 	}
-
 	public void setStartupMessage(List<Message> startupMessage) {
 		this.startupMessage = startupMessage;
 	}
 
 	private long uniqueId = 0;
 
-	public BridgeWebView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		init();
-	}
-
-	public BridgeWebView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		init();
-	}
-
-	public BridgeWebView(Context context) {
-		super(context);
-		init();
-	}
+    public BridgeWebView(WebView aWebView) {
+        mWebView = aWebView;
+        init();
+    }
 
 	/**
 	 * 
@@ -62,13 +50,13 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
 	}
 
     private void init() {
-		this.setVerticalScrollBarEnabled(false);
-		this.setHorizontalScrollBarEnabled(false);
-		this.getSettings().setJavaScriptEnabled(true);
+        mWebView.setVerticalScrollBarEnabled(false);
+        mWebView.setHorizontalScrollBarEnabled(false);
+        mWebView.getSettings().setJavaScriptEnabled(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
-		this.setWebViewClient(generateBridgeWebViewClient());
+        mWebView.setWebViewClient(generateBridgeWebViewClient());
 	}
 
     protected BridgeWebViewClient generateBridgeWebViewClient() {
@@ -127,7 +115,7 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
         messageJson = messageJson.replaceAll("(?<=[^\\\\])(\")", "\\\\\"");
         String javascriptCommand = String.format(BridgeUtil.JS_HANDLE_MESSAGE_FROM_JAVA, messageJson);
         if (Thread.currentThread() == Looper.getMainLooper().getThread()) {
-            this.loadUrl(javascriptCommand);
+            mWebView.loadUrl(javascriptCommand);
         }
     }
 
@@ -196,7 +184,7 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
 	}
 
 	public void loadUrl(String jsUrl, CallBackFunction returnCallback) {
-		this.loadUrl(jsUrl);
+        mWebView.loadUrl(jsUrl);
 		responseCallbacks.put(BridgeUtil.parseFunctionName(jsUrl), returnCallback);
 	}
 
