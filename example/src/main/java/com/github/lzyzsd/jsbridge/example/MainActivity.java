@@ -75,7 +75,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
 			@Override
 			public void handler(String data, CallBackFunction function) {
-				Log.i(TAG, "handler = submitFromWeb, data from web = " + data);
+				Log.e(TAG, "handler = submitFromWeb, data from web = " + data);
                 function.onCallBack("submitFromWeb exe, response data Hebrew from Java");
 			}
 
@@ -129,7 +129,7 @@ public class MainActivity extends Activity implements OnClickListener {
 				@Override
 				public void onCallBack(String data) {
 					// TODO Auto-generated method stub
-					Log.i(TAG, "response data from js " + data);
+					Log.e(TAG, "response data from js " + data);
 				}
 			});
 		}
